@@ -20,7 +20,7 @@ Move Engine::get_move(Board& board, double time) {
     }
     double best_eval = -INF;
     Move best_move;
-    for (; moves > 0; moves &= moves - 1) {
+    for (; moves > 0; moves -= moves & (-moves)) {
         Move move = board.do_move(__builtin_ctzll(moves));
         if (-evaluation(board, 5) >= best_eval) {
             best_move = move;

@@ -28,5 +28,11 @@ int main() {
         board.do_move(move);
         parity ^= 1;
     }
+    
     board.print();
+    int score1 = board.count_player();
+    int score2 = board.count_opponent();
+    if (!parity) std::swap(score1, score2);
+    std::cout << "Engine 1: " << score1 << std::endl; 
+    std::cout << "Engine 2: " << score2 << std::endl; 
 }

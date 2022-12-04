@@ -36,7 +36,7 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
         a = std::max(a, val);
         board.undo_move(move);
     }
-    for (; moves > 0 && val < beta; moves &= moves - 1) {
+    for (; moves > 0 && val < beta; moves -= moves & (-moves)) {
         Move move = board.do_move(__builtin_ctzll(moves));
         val = std::max(val, -search(board, -beta, -a, depth - 1));
         a = std::max(a, val);
