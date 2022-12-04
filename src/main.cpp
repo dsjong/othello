@@ -1,5 +1,6 @@
 #include "board.hpp"
-#include "ab_engine.hpp"
+#include "engines/ab_engine.hpp"
+#include "engines/random_engine.hpp"
 #include "heuristics.hpp"
 
 #include <assert.h>
@@ -9,10 +10,9 @@
 
 int main() {
     Board board;
-    AB_Engine engine1;
-    engine1.heuristic_function = &greedy;
+    Random_Engine engine1;
     AB_Engine engine2;
-    engine2.heuristic_function = &naive;
+    engine2.heuristic_function = &mobility;
 
     int parity = 0;
     while (!board.is_terminal()) {
