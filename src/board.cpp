@@ -16,7 +16,7 @@ int Board::count_opponent() const {
 }
 
 bool Board::is_terminal() {
-    return __builtin_ctzll(get_moves()) + __builtin_ctzll(get_opponent_moves()) == 0;
+    return get_moves() + get_opponent_moves() == 0;
 }
 
 void Board::print() const {

@@ -9,7 +9,7 @@ double AB_Engine::evaluation(Board& board, int depth) {
     return search(board, -INF, INF, depth);
 }
 
-double AB_Engine::search(Board& board, double alpha, double beta, int depth) {    
+double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
     std::pair<Board, int> key = {board, depth};
     if (table.count(key)) {
         auto [lower, upper] = table[key];

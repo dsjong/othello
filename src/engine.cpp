@@ -2,7 +2,6 @@
 #include "board.hpp"
 #include "move.hpp"
 
-#include <iostream>
 #include <utility>
 
 /**
