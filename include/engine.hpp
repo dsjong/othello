@@ -15,8 +15,8 @@
 
 class Engine {
 public:
-    double (*heuristic_function)(Board);
+    double (*heuristic_function)(Board&);
 
-    virtual double evaluation(Board board, int depth) = 0;
-    virtual Move get_move(Board board, double time);
+    virtual double evaluation(Board& board, int depth) = 0;
+    virtual Move get_move(Board& board, double time);
 };

@@ -11,7 +11,7 @@
  * @param time 
  * @return Move object with populated pos and flip
  */
-Move Engine::get_move(Board board, double time) {
+Move Engine::get_move(Board& board, double time) {
     uint64_t moves = board.get_moves();
     double best_eval = -INF;
     Move best_move;

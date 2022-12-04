@@ -20,6 +20,15 @@ public:
 
     Board() : player(INIT_PLAYER), opponent(INIT_OPPONENT) {}
     Board(uint64_t p, uint64_t o) : player(p), opponent(o) {}
+    bool operator==(const Board board) const {
+        return player == board.player and opponent == board.opponent;
+    }
+    bool operator<(const Board board) const {
+        if (player != board.player)
+            return player < board.player;
+        return opponent < board.opponent;
+    }
+    
     int count_player() const;
     int count_opponent() const;
     void print() const;
