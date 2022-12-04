@@ -22,7 +22,7 @@ clean:
 	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
 
 # Tests
-tester:
-	$(CC) $(CFLAGS) test/tester.cpp $(INC) $(LIB) -o bin/tester
+mobility: $(BUILDDIR)/board.o
+	$(CC) $(CFLAGS) tests/mobility.cpp $(BUILDDIR)/board.o $(INC) $(LIB) -o bin/mobility
 
 .PHONY: clean

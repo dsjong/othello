@@ -20,6 +20,11 @@ void Board::print() const {
     }
 }
 
+/**
+ * @brief Randomizes the current board
+ * 
+ * @param seed 
+ */
 void Board::randomize(int seed) {
     std::mt19937 rng(seed);
     std::uniform_int_distribution<uint64_t> distrib(0, -1);
@@ -62,6 +67,24 @@ uint64_t Board::get_moves() const {
     return res;
 }
 
+Move Board::do_move(int pos) {
+    uint64_t flip = 0;
+    Move move{pos, flip};
+    player ^= move.flip;
+    opponent ^= move.flip;
+    player ^= 1ull << move.pos;
+    std::swap(player, opponent);
+    return move;
+}
+
+void Board::undo_move(const Move &move) {
+    std::swap(player, opponent);
+    player ^= 1ull << move.pos;
+    player ^= move.flip;
+    opponent ^= move.flip;
+}
+
+
 uint64_t Board::test_get_moves() const {
     uint64_t res = 0;
     uint64_t filled = player | opponent;
@@ -96,21 +119,4 @@ uint64_t Board::test_get_moves() const {
         }
     }
     return res;
-}
-
-Move Board::do_move(int pos) {
-    uint64_t flip = 0;
-    Move move{pos, flip};
-    player ^= move.flip;
-    opponent ^= move.flip;
-    player ^= 1ull << move.pos;
-    std::swap(player, opponent);
-    return move;
-}
-
-void Board::undo_move(const Move &move) {
-    std::swap(player, opponent);
-    player ^= 1ull << move.pos;
-    player ^= move.flip;
-    opponent ^= move.flip;
 }

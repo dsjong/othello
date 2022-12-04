@@ -27,6 +27,6 @@ int main() {
     }
 
     assert(moves == test_moves);
-    std::cout << "Finding moves with bitboards: " << time << std::endl;
-    std::cout << "Finding moves without bitboards: " << test_time << std::endl;
+    std::cout << "Finding moves with bitboards: " << time << "us" << std::endl;
+    std::cout << "Finding moves without bitboards: " << test_time << "us" << std::endl;   
 }
