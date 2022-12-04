@@ -1,5 +1,6 @@
 #include "ab_engine.hpp"
 #include "board.hpp"
+#include "common.hpp"
 
 #include <utility>
 
@@ -18,30 +19,27 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
         alpha = std::max(alpha, lower);
         beta = std::min(beta, upper);
     }
+    if (board.is_terminal()) {
+        int diff = board.count_player() - board.count_opponent();
+        return ((diff > 0) - (diff < 0)) * INF;
+    }
     if (depth == 0)
         return (*heuristic_function)(board);
     
     double val, a, b;
-    // TODO: fix the condition here
-    if (true) {
-        val = -INF, a = alpha;
-        uint64_t moves = board.get_moves();
-        for (; moves > 0 && val < beta; moves &= moves - 1) {
-            Move move = board.do_move(moves & (-moves));
-            val = std::max(val, search(board, a, beta, depth - 1));
-            a = std::max(a, val);
-            board.undo_move(move);
-        }
+    val = -INF, a = alpha;
+    uint64_t moves = board.get_moves();
+    if (moves == 0) {
+        Move move = board.do_move(-1);
+        val = std::max(val, -search(board, -beta, -a, depth));
+        a = std::max(a, val);
+        board.undo_move(move);
     }
-    else {
-        val = INF, b = beta;
-        uint64_t moves = board.get_moves();
-        for(; moves > 0 && val > alpha; moves &= moves - 1) {
-            Move move = board.do_move(moves & (-moves));
-            val = std::min(val, search(board, alpha, b, depth - 1));
-            b = std::min(b, val);
-            board.undo_move(move);
-        }
+    for (; moves > 0 && val < beta; moves &= moves - 1) {
+        Move move = board.do_move(__builtin_ctzll(moves));
+        val = std::max(val, -search(board, -beta, -a, depth - 1));
+        a = std::max(a, val);
+        board.undo_move(move);
     }
     if (val <= alpha) {
         table[key].second = val;

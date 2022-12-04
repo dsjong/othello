@@ -13,11 +13,7 @@ int main() {
         uint64_t moves = board.get_moves();
         if (moves == 0)
             continue;
-        int pos = 0;
-        while (moves % 2 == 0) {
-            pos++;
-            moves /= 2;
-        }
+        int pos = __builtin_ctzll(moves);
         // board.print();
         // std::cout << pos << "\n";
         auto start = std::chrono::steady_clock::now();

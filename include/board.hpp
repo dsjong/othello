@@ -31,10 +31,12 @@ public:
     
     int count_player() const;
     int count_opponent() const;
+    bool is_terminal();
     void print() const;
     void randomize(int seed);
     uint64_t get_moves() const;
     uint64_t test_get_moves() const;
+    uint64_t get_opponent_moves();
     Move do_move(int pos);
     void undo_move(const Move &move);
 };

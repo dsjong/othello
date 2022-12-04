@@ -15,6 +15,10 @@ int Board::count_opponent() const {
     return __builtin_popcountll(opponent);
 }
 
+bool Board::is_terminal() {
+    return __builtin_ctzll(get_moves()) + __builtin_ctzll(get_opponent_moves()) == 0;
+}
+
 void Board::print() const {
     for (int i = 0; i < BOARD_SIZE; i++) {
         if (player & (1ull << i))
@@ -114,6 +118,13 @@ uint64_t Board::test_get_moves() const {
         }
     }
     return res;
+}
+
+uint64_t Board::get_opponent_moves() {
+    std::swap(player, opponent);
+    uint64_t ret = get_moves();
+    std::swap(player, opponent);
+    return ret;
 }
 
 /**

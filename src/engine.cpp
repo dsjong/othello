@@ -17,7 +17,7 @@ Move Engine::get_move(Board& board, double time) {
     Move best_move;
     for (; moves > 0; moves &= moves - 1) {
         Move move = board.do_move(moves & (-moves));
-        if (evaluation(board, 5) >= best_eval) {
+        if (-evaluation(board, 5) >= best_eval) {
             best_move = move;
         }
         board.undo_move(move);
