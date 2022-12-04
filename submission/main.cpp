@@ -14,11 +14,17 @@ int main() {
                 player |= 1ull << i;
             if (c == '1')
                 opponent |= 1ull << i;
-            if (id)
-                std::swap(player, opponent);
         }
+        int actionCount;
+        std::cin >> actionCount;
+        while(actionCount--) {
+            std::string action;
+            std::cin >> action;
+        }
+        if (id)
+            std::swap(player, opponent);
         Board board(player, opponent);
         Move move = engine.get_move(board, 150);
-        std::cout << move << std::endl;
+        std::cout << move << " MSG " << player << " " << opponent << std::endl;
     }
 }

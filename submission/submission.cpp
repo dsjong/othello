@@ -339,7 +339,7 @@ Move Engine::get_move(Board& board, double time) {
     Move best_move;
     for (; moves > 0; moves -= moves & (-moves)) {
         Move move = board.do_move(__builtin_ctzll(moves));
-        if (-evaluation(board, 7) > best_eval) {
+        if (-evaluation(board, 6) > best_eval) {
             best_move = move;
         }
         best_move = move;
@@ -401,8 +401,8 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
     return val;
 }
 int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
     AB_Engine engine;
     engine.heuristic_function = &reward_table;
     int id, boardSize;
@@ -411,16 +411,22 @@ int main() {
         uint64_t player = 0, opponent = 0;
         for (int i = 0; i < 64; i++) {
             char c;
-            cin >> c;
+            std::cin >> c;
             if (c == '0')
                 player |= 1ull << i;
             if (c == '1')
                 opponent |= 1ull << i;
-            if (id)
-                std::swap(player, opponent);
         }
+        int actionCount;
+        std::cin >> actionCount;
+        while(actionCount--) {
+            string action;
+            std::cin >> action;
+        }
+        if (id)
+            std::swap(player, opponent);
         Board board(player, opponent);
         Move move = engine.get_move(board, 150);
-        std::cout << move << std::endl;
+        std::cout << move << " MSG " << player << " " << opponent << std::endl;
     }
 }
