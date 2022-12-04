@@ -7,11 +7,19 @@
 #include <utility>
 #include <vector>
 
+int Board::count_player() const {
+    return __builtin_popcountll(player);
+}
+
+int Board::count_opponent() const {
+    return __builtin_popcountll(opponent);
+}
+
 void Board::print() const {
     for (int i = 0; i < BOARD_SIZE; i++) {
-        if (player & (1ll << i))
+        if (player & (1ull << i))
             std::cout << "O";
-        else if (opponent & (1ll << i))
+        else if (opponent & (1ull << i))
             std::cout << "X";
         else
             std::cout << ".";
@@ -67,24 +75,6 @@ uint64_t Board::get_moves() const {
     return res;
 }
 
-Move Board::do_move(int pos) {
-    uint64_t flip = 0;
-    Move move{pos, flip};
-    player ^= move.flip;
-    opponent ^= move.flip;
-    player ^= 1ull << move.pos;
-    std::swap(player, opponent);
-    return move;
-}
-
-void Board::undo_move(const Move &move) {
-    std::swap(player, opponent);
-    player ^= 1ull << move.pos;
-    player ^= move.flip;
-    opponent ^= move.flip;
-}
-
-
 uint64_t Board::test_get_moves() const {
     uint64_t res = 0;
     uint64_t filled = player | opponent;
@@ -119,4 +109,27 @@ uint64_t Board::test_get_moves() const {
         }
     }
     return res;
+}
+
+/**
+ * @brief Flips discs after putting a token on pos
+ * 
+ * @param pos 
+ * @return Move object containing flipped discs 
+ */
+Move Board::do_move(int pos) {
+    uint64_t flip = 0;
+    Move move{pos, flip};
+    player ^= move.flip;
+    opponent ^= move.flip;
+    player ^= 1ull << move.pos;
+    std::swap(player, opponent);
+    return move;
+}
+
+void Board::undo_move(const Move &move) {
+    std::swap(player, opponent);
+    player ^= 1ull << move.pos;
+    player ^= move.flip;
+    opponent ^= move.flip;
 }

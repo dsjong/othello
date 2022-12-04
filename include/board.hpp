@@ -20,6 +20,8 @@ public:
 
     Board() : player(INIT_PLAYER), opponent(INIT_OPPONENT) {}
     Board(uint64_t p, uint64_t o) : player(p), opponent(o) {}
+    int count_player() const;
+    int count_opponent() const;
     void print() const;
     void randomize(int seed);
     uint64_t get_moves() const;
