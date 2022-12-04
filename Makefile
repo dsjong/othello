@@ -25,4 +25,7 @@ clean:
 mobility: $(BUILDDIR)/board.o
 	$(CC) $(CFLAGS) tests/mobility.cpp $(BUILDDIR)/board.o $(INC) $(LIB) -o bin/mobility
 
+move: $(BUILDDIR)/board.o
+	$(CC) $(CFLAGS) tests/move.cpp $(BUILDDIR)/board.o $(INC) $(LIB) -o bin/move
+
 .PHONY: clean

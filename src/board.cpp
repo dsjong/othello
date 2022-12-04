@@ -75,6 +75,11 @@ uint64_t Board::get_moves() const {
     return res;
 }
 
+/**
+ * @brief Unit test for get_moves
+ * 
+ * @return Same as get_moves 
+ */
 uint64_t Board::test_get_moves() const {
     uint64_t res = 0;
     uint64_t filled = player | opponent;
@@ -112,13 +117,46 @@ uint64_t Board::test_get_moves() const {
 }
 
 /**
- * @brief Flips discs after putting a token on pos
+ * @brief Flips discs after putting a token on pos, populating a Move object
  * 
  * @param pos 
  * @return Move object containing flipped discs 
  */
 Move Board::do_move(int pos) {
+    if (pos == -1) {
+        std::swap(player, opponent);
+        return Move{pos, 0};
+    }
     uint64_t flip = 0;
+    static const std::vector<std::pair<int, int>> dirs = {
+        {0, 1}, {0, -1}, {1, 0}, {-1, 0},
+        {1, 1}, {-1, -1}, {1, -1}, {-1, 1},
+    };
+    auto get_bit = [&](uint64_t board, int i, int j){
+        if (i < 0 || j < 0 || i >= 8 || j >= 8) return -1;
+        int pos = i * 8 + j;
+        return (int) ((board & (1ull << pos)) > 0);
+    };
+    int i = pos / 8, j = pos % 8;
+    for (auto [di, dj] : dirs) {
+        if (get_bit(opponent, i + di, j + dj) != 1)
+            continue;
+        uint64_t rev = 0;
+        for (int x = i + di, y = j + dj; ; x += di, y += dj) {
+            int p = get_bit(player, x, y);
+            int o = get_bit(opponent, x, y);
+            if (std::max(p, o) != 1) break;
+            if (p == -1) break;
+            if (p == 1) {
+                flip |= rev;
+                break;
+            }
+            else {
+                rev |= 1ull << (8 * x + y);
+            }
+        }
+    }
+
     Move move{pos, flip};
     player ^= move.flip;
     opponent ^= move.flip;
@@ -129,6 +167,8 @@ Move Board::do_move(int pos) {
 
 void Board::undo_move(const Move &move) {
     std::swap(player, opponent);
+    if (move.pos == -1)
+        return;
     player ^= 1ull << move.pos;
     player ^= move.flip;
     opponent ^= move.flip;

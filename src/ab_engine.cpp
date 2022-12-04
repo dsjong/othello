@@ -22,6 +22,7 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
         return (*heuristic_function)(board);
     
     double val, a, b;
+    // TODO: fix the condition here
     if (true) {
         val = -INF, a = alpha;
         uint64_t moves = board.get_moves();
