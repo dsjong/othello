@@ -12,8 +12,16 @@
 
 #include "common.hpp"
 
+#include <iostream>
+
 class Move{
 public:
     int pos;
     uint64_t flip;
+
+    friend std::ostream& operator<<(std::ostream& os, const Move& move) {
+        os << (char) ('a' + move.pos % 8);
+        os << (char) ('1' + move.pos / 8);
+        return os;
+    }
 };
