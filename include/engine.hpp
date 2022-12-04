@@ -14,6 +14,7 @@
 #include "move.hpp"
 
 #include <chrono>
+#include <condition_variable>
 
 class Engine {
 public:
@@ -21,5 +22,9 @@ public:
 
     virtual double evaluation(Board& board, int depth) { return 0; }
     virtual Move get_move(Board& board, std::chrono::milliseconds time);
-    Move get_move_at_depth(Board& board, int depth);
+    void get_move_at_depth(Board &board, int depth, Move &move);
+
+private:
+    std::condition_variable cv;
+    std::mutex cv_m;
 };
