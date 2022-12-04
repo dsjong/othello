@@ -1,4 +1,6 @@
 #include "board.hpp"
+#include "ab_engine.hpp"
+#include "heuristics.hpp"
 
 #include <assert.h>
 #include <chrono>
@@ -7,9 +9,24 @@
 
 int main() {
     Board board;
-    board.player = 1;
-    board.opponent = 30;
-    board.print();
-    board.do_move(5);
+    AB_Engine engine1;
+    engine1.heuristic_function = &greedy;
+    AB_Engine engine2;
+    engine2.heuristic_function = &naive;
+
+    int parity = 0;
+    while (!board.is_terminal()) {
+        board.print();
+        int move;
+        if (parity == 0) {
+            move = engine1.get_move(board, 150).pos;
+        }
+        else {
+            move = engine2.get_move(board, 150).pos;
+        }
+        printf("player %d moves move %d\n", parity, move);
+        board.do_move(move);
+        parity ^= 1;
+    }
     board.print();
 }

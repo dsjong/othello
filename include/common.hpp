@@ -14,6 +14,6 @@
 
 #define BOARD_SIZE      64
 #define BOARD_LEN       8
-#define INIT_PLAYER     0x1008000000
-#define INIT_OPPONENT   0x0810000000
-#define INF             INT32_MAX
+#define INIT_PLAYER     0x0810000000
+#define INIT_OPPONENT   0x1008000000
+#define INF             1e9

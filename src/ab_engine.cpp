@@ -2,13 +2,14 @@
 #include "board.hpp"
 #include "common.hpp"
 
+#include <iostream>
 #include <utility>
 
 double AB_Engine::evaluation(Board& board, int depth) {
     return search(board, -INF, INF, depth);
 }
 
-double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
+double AB_Engine::search(Board& board, double alpha, double beta, int depth) {    
     std::pair<Board, int> key = {board, depth};
     if (table.count(key)) {
         auto [lower, upper] = table[key];
@@ -26,7 +27,7 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
     if (depth == 0)
         return (*heuristic_function)(board);
     
-    double val, a, b;
+    double val, a;
     val = -INF, a = alpha;
     uint64_t moves = board.get_moves();
     if (moves == 0) {
@@ -51,5 +52,7 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
     if (val >= beta) {
         table[key].first = val;
     }
+    // board.print();
+    // printf("evaluation: %f\n\n", val);
     return val;
 }
