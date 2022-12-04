@@ -1,10 +1,9 @@
 #include "engines/random_engine.hpp"
 
-#include <chrono>
 #include <random>
 #include <vector>
 
-Move Random_Engine::get_move(Board &board, double time) {
+Move Random_Engine::get_move(Board &board, std::chrono::milliseconds time) {
     uint64_t moves = board.get_moves();
     if (moves == 0) {
         Move move = board.do_move(-1);

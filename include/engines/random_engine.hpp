@@ -5,5 +5,5 @@
 
 class Random_Engine : public Engine {
 public:
-    Move get_move(Board &board, double time);
+    Move get_move(Board &board, std::chrono::milliseconds time);
 };

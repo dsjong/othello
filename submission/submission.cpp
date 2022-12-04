@@ -123,12 +123,13 @@ double reward_table(Board &board) {
 
 
 
+
 class Engine {
 public:
     double (*heuristic_function)(Board&);
 
     virtual double evaluation(Board& board, int depth) { return 0; }
-    virtual Move get_move(Board& board, double time);
+    virtual Move get_move(Board& board, std::chrono::milliseconds time);
 };
 
 
@@ -320,7 +321,6 @@ void Board::undo_move(const Move &move) {
     opponent ^= move.flip;
 }
 
-
 /**
  * @brief Returns the best move for a particular board
  * 
@@ -328,7 +328,7 @@ void Board::undo_move(const Move &move) {
  * @param time 
  * @return Move object with populated pos and flip
  */
-Move Engine::get_move(Board& board, double time) {
+Move Engine::get_move(Board& board, std::chrono::milliseconds time) {
     uint64_t moves = board.get_moves();
     if (moves == 0) {
         Move move = board.do_move(-1);
@@ -337,13 +337,15 @@ Move Engine::get_move(Board& board, double time) {
     }
     double best_eval = -INF-1;
     Move best_move;
-    for (; moves > 0; moves -= moves & (-moves)) {
-        Move move = board.do_move(__builtin_ctzll(moves));
-        if (-evaluation(board, 6) > best_eval) {
+    for (int depth = 1; depth < 20; depth++) {
+        for (; moves > 0; moves -= moves & (-moves)) {
+            Move move = board.do_move(__builtin_ctzll(moves));
+            if (-evaluation(board, 6) > best_eval) {
+                best_move = move;
+            }
             best_move = move;
+            board.undo_move(move);
         }
-        best_move = move;
-        board.undo_move(move);
     }
     return best_move;
 }
@@ -420,7 +422,7 @@ int main() {
         int actionCount;
         std::cin >> actionCount;
         while(actionCount--) {
-            string action;
+            std::string action;
             std::cin >> action;
         }
         if (id)

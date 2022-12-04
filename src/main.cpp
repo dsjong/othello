@@ -8,6 +8,8 @@
 #include <iostream>
 #include <vector>
 
+using namespace std::chrono_literals;
+
 int main() {
     Board board;
     Random_Engine engine1;
@@ -19,12 +21,12 @@ int main() {
         board.print();
         int move;
         if (parity == 0) {
-            move = engine1.get_move(board, 150).pos;
+            move = engine1.get_move(board, 140ms).pos;
         }
         else {
-            move = engine2.get_move(board, 150).pos;
+            move = engine2.get_move(board, 140ms).pos;
         }
-        printf("player %d moves move %d\n", parity, move);
+        printf("player %d moves %d\n", parity, move);
         board.do_move(move);
         parity ^= 1;
     }
@@ -32,7 +34,7 @@ int main() {
     board.print();
     int score1 = board.count_player();
     int score2 = board.count_opponent();
-    if (!parity) std::swap(score1, score2);
+    if (parity) std::swap(score1, score2);
     std::cout << "Engine 1: " << score1 << std::endl; 
     std::cout << "Engine 2: " << score2 << std::endl; 
 }
