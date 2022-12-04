@@ -41,6 +41,7 @@ submission:
 	@cat $(SUBDIR)/main.cpp >> $(SUBMISSION)
 	@sed '/^#include/d' $(SUBMISSION) > tmp
 	@sed '/^#pragma/d' tmp > $(SUBMISSION)
+	@sed -i '1i #include <bits/stdc++.h>\n' $(SUBMISSION)
 	@rm -f tmp
 
 # Tests

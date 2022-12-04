@@ -1,3 +1,5 @@
+using namespace std::chrono_literals;
+
 int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(NULL);
@@ -24,7 +26,7 @@ int main() {
         if (id)
             std::swap(player, opponent);
         Board board(player, opponent);
-        Move move = engine.get_move(board, 150);
+        Move move = engine.get_move(board, 130ms);
         std::cout << move << " MSG " << player << " " << opponent << std::endl;
     }
 }

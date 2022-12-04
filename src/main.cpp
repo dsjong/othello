@@ -18,15 +18,19 @@ int main() {
 
     int parity = 0;
     while (!board.is_terminal()) {
+        auto start = std::chrono::steady_clock::now();
         board.print();
         int move;
         if (parity == 0) {
-            move = engine1.get_move(board, 140ms).pos;
+            move = engine1.get_move(board, 130ms).pos;
         }
         else {
-            move = engine2.get_move(board, 140ms).pos;
+            move = engine2.get_move(board, 130ms).pos;
         }
-        printf("player %d moves %d\n", parity, move);
+        auto end = std::chrono::steady_clock::now();
+        std::cout << "player " << parity  << " moves " << move << std::endl;
+        int elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        std::cout << "player " << parity  << " took " << elapsed << "ms" << std::endl;
         board.do_move(move);
         parity ^= 1;
     }
