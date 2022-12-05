@@ -31,7 +31,7 @@ Move Engine::get_move(Board& board, std::chrono::milliseconds time) {
         auto now = std::chrono::steady_clock::now();
         auto time_left = time - (now - start);
         if (!cv.wait_for(lk, time_left, [&]{ return cur_move->pos != -1; } )) {
-            std::cout << "finished until depth " << depth - 1 << "\n";
+            // std::cout << "finished until depth " << depth - 1 << "\n";
             return move;
         }
         move = *cur_move;

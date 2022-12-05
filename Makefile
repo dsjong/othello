@@ -28,6 +28,7 @@ submission:
 	@mkdir -p $(SUBDIR)
 	@rm -f $(SUBMISSION)
 	@cat include/common.hpp >> $(SUBMISSION)
+	@cat include/edgetable.hpp >> $(SUBMISSION)
 	@cat include/move.hpp >> $(SUBMISSION)
 	@cat include/board.hpp >> $(SUBMISSION)
 	@cat include/heuristics.hpp >> $(SUBMISSION)
@@ -45,6 +46,9 @@ submission:
 	@rm -f tmp
 
 # Tests
+frontier: $(BUILDDIR)/board.o
+	$(CC) $(CFLAGS) tests/frontier.cpp $(BUILDDIR)/board.o $(INC) $(LIB) -o bin/frontier
+
 mobility: $(BUILDDIR)/board.o
 	$(CC) $(CFLAGS) tests/mobility.cpp $(BUILDDIR)/board.o $(INC) $(LIB) -o bin/mobility
 

@@ -26,7 +26,7 @@ int main() {
         if (id)
             std::swap(player, opponent);
         Board board(player, opponent);
-        Move move = engine.get_move(board, 130ms);
+        Move move = engine.get_move(board, 145ms);
         std::cout << move << " MSG " << player << " " << opponent << std::endl;
     }
 }

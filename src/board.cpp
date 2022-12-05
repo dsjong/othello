@@ -83,50 +83,30 @@ uint64_t Board::get_moves() const {
     return res;
 }
 
-/**
- * @brief Unit test for get_moves
- * 
- * @return Same as get_moves 
- */
-uint64_t Board::test_get_moves() const {
-    uint64_t res = 0;
-    uint64_t filled = player | opponent;
-    std::vector<std::pair<int, int>> dirs = {
-        {0, 1}, {0, -1}, {1, 0}, {-1, 0},
-        {1, 1}, {-1, -1}, {1, -1}, {-1, 1},
-    };
-    auto get_bit = [&](uint64_t board, int i, int j){
-        if (i < 0 || j < 0 || i >= 8 || j >= 8) return -1;
-        int pos = i * 8 + j;
-        return (int) ((board & (1ull << pos)) > 0);
-    };
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            if (get_bit(filled, i, j))
-                continue;
-            for (auto [di, dj] : dirs) {
-                if (get_bit(opponent, i + di, j + dj) != 1)
-                    continue;
-                for (int x = i + di, y = j + dj; ; x += di, y += dj) {
-                    int p = get_bit(player, x, y);
-                    int o = get_bit(opponent, x, y);
-                    if (std::max(p, o) != 1) break;
-                    if (p == -1) break;
-                    if (p == 1) {
-                        res |= 1ull << (i * 8 + j);
-                        goto end;
-                    }
-                }
-            }
-            end:;
-        }
-    }
-    return res;
-}
-
 uint64_t Board::get_opponent_moves() {
     std::swap(player, opponent);
     uint64_t ret = get_moves();
+    std::swap(player, opponent);
+    return ret;
+}
+
+uint64_t Board::get_frontier() const {
+    uint64_t res = 0;
+    uint64_t blank = ~(player | opponent);    
+    res |= 0xfefefefefefefefe & (player << 1);
+    res |= 0x7f7f7f7f7f7f7f7f & (player >> 1);
+    res |= 0x7f7f7f7f7f7f7f00 & (player << 7);
+    res |= 0x00fefefefefefefe & (player >> 7);
+    res |= 0xffffffffffffff00 & (player << 8);
+    res |= 0x00ffffffffffffff & (player >> 8);
+    res |= 0xfefefefefefefe00 & (player << 9);
+    res |= 0x007f7f7f7f7f7f7f & (player >> 9);
+    return res & blank;
+}
+
+uint64_t Board::get_opponent_frontier() {
+    std::swap(player, opponent);
+    uint64_t ret = get_frontier();
     std::swap(player, opponent);
     return ret;
 }
