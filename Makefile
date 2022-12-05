@@ -22,7 +22,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 
 clean:
 	@echo " Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET) $(SUBMISSION)"; $(RM) -r $(BUILDDIR) $(TARGET) $(SUBMISSION)
 
 submission:
 	@mkdir -p $(SUBDIR)
@@ -40,11 +40,15 @@ submission:
 	@cat src/engines/ab_engine.cpp >> $(SUBMISSION)
 
 	@cat $(SUBDIR)/main.cpp >> $(SUBMISSION)
-	@sed '/^#include/d' $(SUBMISSION) > tmp
-	@sed '/^#pragma/d' tmp > $(SUBMISSION)
+	@sed -i '/^#include/d' $(SUBMISSION)
+	@sed -i '/^#pragma/d' $(SUBMISSION)
+	@sed -i '/^ \*/d' $(SUBMISSION)
+	@sed -i '/^\/\*\*/d' $(SUBMISSION)
 	@sed -i '1i #include <bits/stdc++.h>' $(SUBMISSION)
 	@sed -i '2i #pragma GCC optimize ("O3")' $(SUBMISSION)
-	@rm -f tmp
+	@awk -r 'NF' $(SUBMISSION) > tmp
+	mv tmp $(SUBMISSION)
+	@wc -c $(SUBMISSION)
 
 # Tests
 frontier: $(BUILDDIR)/board.o
