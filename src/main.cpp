@@ -1,6 +1,7 @@
 #include "board.hpp"
 #include "edgetable.hpp"
 #include "engines/ab_engine.hpp"
+#include "engines/mtdf_engine.hpp"
 #include "engines/random_engine.hpp"
 #include "heuristics.hpp"
 
@@ -14,7 +15,7 @@ using namespace std::chrono_literals;
 int main() {
     init_edge_table();
     AB_Engine engine1;
-    Random_Engine engine2;
+    AB_Engine engine2;
     engine1.heuristic_function = &reward_table;
     engine2.heuristic_function = &reward_table;
 
@@ -24,7 +25,7 @@ int main() {
         int parity = 0;
         while (!board.is_terminal()) {
             auto start = std::chrono::steady_clock::now();
-            // board.print();
+            board.print();
             int move;
             if (parity == 0) {
                 move = engine1.get_move(board, 130ms).pos;
@@ -33,9 +34,9 @@ int main() {
                 move = engine2.get_move(board, 130ms).pos;
             }
             auto end = std::chrono::steady_clock::now();
-            // std::cout << "player " << parity  << " moves " << move << std::endl;
+            std::cout << "player " << parity  << " moves " << move << std::endl;
             int elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-            // std::cout << "player " << parity  << " took " << elapsed << "ms" << std::endl;
+            std::cout << "player " << parity  << " took " << elapsed << "ms" << std::endl;
             board.do_move(move);
             parity ^= 1;
         }

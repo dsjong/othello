@@ -43,13 +43,15 @@ void Engine::get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Mo
     Board board(player, opponent);
     uint64_t moves = board.get_moves();
     Move best_move;
-    double best_eval = -INF-1;
+    double best_eval = -INF;
+    bool moved = false;
 
     for (; moves > 0; moves -= moves & (-moves)) {
         Move move = board.do_move(__builtin_ctzll(moves));
         double score;
         score = -evaluation(board, depth);
-        if (score > best_eval) {
+        if (score > best_eval || !moved) {
+            moved = true;
             best_move = move;
             best_eval = score;
         }
