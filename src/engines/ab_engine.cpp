@@ -6,7 +6,19 @@
 #include <utility>
 
 double AB_Engine::evaluation(Board& board, int depth) {
-    return search(board, -INF, INF, depth, board.count());
+    int g = 0;
+    int upper = INF;
+    int lower = -INF;
+    int turn = board.count();
+    while (lower < upper) {
+        int beta = std::max(g, lower + 1);
+        g = search(board, beta - 1, beta, depth, turn);
+        if (g < beta)
+            upper = g;
+        else
+            lower = g;
+    }
+    return g;
 }
 
 double AB_Engine::search(Board& board, double alpha, double beta, int depth, int turn) {

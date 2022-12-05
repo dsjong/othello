@@ -15,7 +15,7 @@ int main() {
     init_edge_table();
     AB_Engine engine1;
     Random_Engine engine2;
-    engine1.heuristic_function = &heuristic1;
+    engine1.heuristic_function = &reward_table;
     engine2.heuristic_function = &reward_table;
 
     int games = 1;
