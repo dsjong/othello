@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-class Move{
+class Move {
 public:
     int pos = -1;
     uint64_t flip = 0;

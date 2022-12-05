@@ -1,4 +1,5 @@
 #include "board.hpp"
+#include "edgetable.hpp"
 #include "engines/ab_engine.hpp"
 #include "engines/random_engine.hpp"
 #include "heuristics.hpp"
@@ -11,10 +12,11 @@
 using namespace std::chrono_literals;
 
 int main() {
+    init_edge_table();
     AB_Engine engine1;
     AB_Engine engine2;
     engine1.heuristic_function = &heuristic1;
-    engine2.heuristic_function = &mobility;
+    engine2.heuristic_function = &reward_table;
 
     int games = 1;
     for (int i = 0; i < games; i++) {

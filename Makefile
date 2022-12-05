@@ -27,8 +27,8 @@ clean:
 submission:
 	@mkdir -p $(SUBDIR)
 	@rm -f $(SUBMISSION)
+	@cat src/edgetable.cpp >> $(SUBMISSION)
 	@cat include/common.hpp >> $(SUBMISSION)
-	@cat include/edgetable.hpp >> $(SUBMISSION)
 	@cat include/move.hpp >> $(SUBMISSION)
 	@cat include/board.hpp >> $(SUBMISSION)
 	@cat include/heuristics.hpp >> $(SUBMISSION)
@@ -42,7 +42,8 @@ submission:
 	@cat $(SUBDIR)/main.cpp >> $(SUBMISSION)
 	@sed '/^#include/d' $(SUBMISSION) > tmp
 	@sed '/^#pragma/d' tmp > $(SUBMISSION)
-	@sed -i '1i #include <bits/stdc++.h>\n' $(SUBMISSION)
+	@sed -i '1i #include <bits/stdc++.h>' $(SUBMISSION)
+	@sed -i '2i #pragma GCC optimize ("O3")' $(SUBMISSION)
 	@rm -f tmp
 
 # Tests
@@ -54,5 +55,8 @@ mobility: $(BUILDDIR)/board.o
 
 move: $(BUILDDIR)/board.o
 	$(CC) $(CFLAGS) tests/move.cpp $(BUILDDIR)/board.o $(INC) $(LIB) -o bin/move
+
+stability: $(BUILDDIR)/edgetable.o
+	$(CC) $(CFLAGS) tests/stability.cpp $(BUILDDIR)/edgetable.o $(INC) $(LIB) -o bin/stability
 
 .PHONY: clean submission

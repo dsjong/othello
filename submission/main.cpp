@@ -3,8 +3,9 @@ using namespace std::chrono_literals;
 int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(NULL);
+    init_edge_table();
     AB_Engine engine;
-    engine.heuristic_function = &reward_table;
+    engine.heuristic_function = &heuristic1;
     int id, boardSize;
     std::cin >> id >> boardSize;
     while (true) {

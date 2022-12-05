@@ -57,7 +57,7 @@ double stability(Board& board) {
                 val += 2;
             }
         }
-        res += edgeTable[val];
+        res += edge_table[val];
     }
     return res;
 }
