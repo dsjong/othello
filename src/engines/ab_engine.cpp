@@ -60,8 +60,5 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth, int
             table[key].first = val;
         }
     }
-    
-    // board.print();
-    // printf("evaluation: %f\n\n", val);
     return val;
 }

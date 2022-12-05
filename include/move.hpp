@@ -16,8 +16,8 @@
 
 class Move{
 public:
-    int pos;
-    uint64_t flip;
+    int pos = -1;
+    uint64_t flip = 0;
 
     friend std::ostream& operator<<(std::ostream& os, const Move& move) {
         os << (char) ('a' + move.pos % 8);

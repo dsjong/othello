@@ -23,31 +23,26 @@ Move Engine::get_move(Board& board, std::chrono::milliseconds time) {
         board.undo_move(move);
         return move;
     }
-    Move move{-1, 0};
+    Move move;
     for (int depth = 1; depth < 15; depth++) {
-        Move cur_move{-1, 0};
-        std::thread(&Engine::get_move_at_depth, this, board.player, board.opponent, depth, std::ref(cur_move)).detach();
-        // auto loop_start = std::chrono::steady_clock::now();
+        Move* cur_move = new Move;
+        std::thread(&Engine::get_move_at_depth, this, board.player, board.opponent, depth, cur_move).detach();
         std::unique_lock<std::mutex> lk(engine_mutex);
         auto now = std::chrono::steady_clock::now();
         auto time_left = time - (now - start);
-        if (!cv.wait_for(lk, time_left, [&]{ return cur_move.pos != -1; } )) {
-            // std::cout << "finished at depth " << depth << "\n";
+        if (!cv.wait_for(lk, time_left, [&]{ return cur_move->pos != -1; } )) {
+            std::cout << "finished until depth " << depth - 1 << "\n";
             return move;
         }
-        // std::cout << depth << " is finished" << std::endl;
-        // auto loop_end = std::chrono::steady_clock::now();
-        // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(time_left).count() << " is time left\n";
-        // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(loop_end - loop_start).count() << " is loop time\n";
-        std::swap(move, cur_move);
+        move = *cur_move;
     }
     return move;
 }
 
-void Engine::get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move &move) {
+void Engine::get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move* move) {
     Board board(player, opponent);
     uint64_t moves = board.get_moves();
-    Move best_move{-1, 0};
+    Move best_move;
     double best_eval = -INF-1;
 
     for (; moves > 0; moves -= moves & (-moves)) {
@@ -60,6 +55,9 @@ void Engine::get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Mo
         }
         board.undo_move(move);
     }
-    move = best_move;
+    {
+        std::lock_guard<std::mutex> lk(engine_mutex);
+        *move = best_move;
+    }
     cv.notify_all();
 }
