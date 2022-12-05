@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 int main() {
     init_edge_table();
     AB_Engine engine1;
-    AB_Engine engine2;
+    Random_Engine engine2;
     engine1.heuristic_function = &heuristic1;
     engine2.heuristic_function = &reward_table;
 

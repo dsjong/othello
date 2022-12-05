@@ -10,12 +10,11 @@ double AB_Engine::evaluation(Board& board, int depth) {
 }
 
 double AB_Engine::search(Board& board, double alpha, double beta, int depth, int turn) {
-    std::pair<Board, int> key = {board, depth};
     {
         std::lock_guard<std::mutex> lk(map_mutex);
         if (this->turn != turn) return 0;
-        if (table.count(key)) {
-            auto [lower, upper] = table[key];
+        if (table[depth].count(board)) {
+            auto [lower, upper] = table[depth][board];
             if (lower >= beta)
                 return lower;
             if (upper <= alpha)
@@ -50,14 +49,14 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth, int
     {
         std::lock_guard<std::mutex> lk(map_mutex);
         if (val <= alpha) {
-            table[key].second = val;
+            table[depth][board].second = val;
         }
         if (val > alpha && val < beta) {
-            table[key].second = val;
-            table[key].first = val;
+            table[depth][board].second = val;
+            table[depth][board].first = val;
         }
         if (val >= beta) {
-            table[key].first = val;
+            table[depth][board].first = val;
         }
     }
     return val;

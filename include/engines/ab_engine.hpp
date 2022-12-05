@@ -9,7 +9,7 @@
 
 class AB_Engine : public Engine {
 public:
-    std::map<std::pair<Board, int>, std::pair<double, double>> table;
+    std::map<Board, std::pair<double, double>> table[20];
 
     double evaluation(Board& board, int depth);
     double search(Board& board, double alpha, double beta, int depth, int turn);
