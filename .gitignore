@@ -4,3 +4,6 @@ lib/*
 
 # Ignore any executables
 bin/*
+
+# Ignore the submission
+submission/submission.cpp
