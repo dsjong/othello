@@ -40,8 +40,8 @@ int main() {
             board.do_move(move);
             parity ^= 1;
         }
-        
-        // board.print();
+        std::cout << "----------\n";
+        board.print();
         int score1 = board.count_player();
         int score2 = board.count_opponent();
         if (parity) std::swap(score1, score2);
