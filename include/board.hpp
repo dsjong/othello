@@ -36,8 +36,9 @@ public:
     void print() const;
     void randomize(int seed);
     uint64_t get_moves() const;
-    uint64_t test_get_moves() const;
     uint64_t get_opponent_moves();
+    uint64_t get_frontier() const;
+    uint64_t get_opponent_frontier();
     Move do_move(int pos);
     void undo_move(const Move &move);
 };

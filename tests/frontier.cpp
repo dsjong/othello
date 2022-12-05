@@ -5,11 +5,9 @@
 #include <iostream>
 #include <vector>
 
-uint64_t test_get_moves(Board& board) {
-    uint64_t player = board.player;
-    uint64_t opponent = board.opponent;
+uint64_t test_get_frontier(Board &board) {
     uint64_t res = 0;
-    uint64_t filled = player | opponent;
+    uint64_t filled = board.player | board.opponent;
     std::vector<std::pair<int, int>> dirs = {
         {0, 1}, {0, -1}, {1, 0}, {-1, 0},
         {1, 1}, {-1, -1}, {1, -1}, {-1, 1},
@@ -21,23 +19,14 @@ uint64_t test_get_moves(Board& board) {
     };
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            if (get_bit(filled, i, j))
+            if (get_bit(filled, i, j) == 1)
                 continue;
             for (auto [di, dj] : dirs) {
-                if (get_bit(opponent, i + di, j + dj) != 1)
-                    continue;
-                for (int x = i + di, y = j + dj; ; x += di, y += dj) {
-                    int p = get_bit(player, x, y);
-                    int o = get_bit(opponent, x, y);
-                    if (std::max(p, o) != 1) break;
-                    if (p == -1) break;
-                    if (p == 1) {
-                        res |= 1ull << (i * 8 + j);
-                        goto end;
-                    }
+                if (get_bit(board.player, i + di, j + dj) == 1) {
+                    res |= 1ull << (i * 8 + j);
+                    break;
                 }
             }
-            end:;
         }
     }
     return res;
@@ -51,7 +40,7 @@ int main() {
     for (int seed = 0; seed < 100000; seed++) {
         board.randomize(seed);
         auto start = std::chrono::steady_clock::now();
-        moves.push_back(board.get_moves());
+        moves.push_back(board.get_frontier());
         auto end = std::chrono::steady_clock::now();
         time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     }
@@ -59,12 +48,12 @@ int main() {
     for (int seed = 0; seed < 100000; seed++) {
         board.randomize(seed);
         auto start = std::chrono::steady_clock::now();
-        test_moves.push_back(test_get_moves(board));
+        test_moves.push_back(test_get_frontier(board));
         auto end = std::chrono::steady_clock::now();
         test_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     }
 
     assert(moves == test_moves);
-    std::cout << "Finding moves with bitboards: " << time << "us" << std::endl;
-    std::cout << "Finding moves without bitboards: " << test_time << "us" << std::endl;   
+    std::cout << "Finding frontiers with bitboards: " << time << "us" << std::endl;
+    std::cout << "Finding frontiers without bitboards: " << test_time << "us" << std::endl;   
 }
