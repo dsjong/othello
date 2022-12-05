@@ -18,13 +18,14 @@
 
 class Engine {
 public:
+    int turn;
     double (*heuristic_function)(Board&);
 
     virtual double evaluation(Board& board, int depth) { return 0; }
     virtual Move get_move(Board& board, std::chrono::milliseconds time);
-    void get_move_at_depth(Board &board, int depth, Move &move);
+    void get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move &move);
 
 private:
     std::condition_variable cv;
-    std::mutex cv_m;
+    std::mutex engine_mutex;
 };

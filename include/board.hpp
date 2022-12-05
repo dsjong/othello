@@ -31,6 +31,7 @@ public:
     
     int count_player() const;
     int count_opponent() const;
+    int count() const;
     bool is_terminal();
     void print() const;
     void randomize(int seed);

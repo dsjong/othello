@@ -15,6 +15,10 @@ int Board::count_opponent() const {
     return __builtin_popcountll(opponent);
 }
 
+int Board::count() const {
+    return count_player() + count_opponent();
+}
+
 bool Board::is_terminal() {
     return get_moves() + get_opponent_moves() == 0;
 }

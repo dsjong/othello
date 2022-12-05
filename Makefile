@@ -8,7 +8,7 @@ SUBMISSION := $(SUBDIR)/submission.cpp
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-CFLAGS := -std=c++17 -Wall -O3
+CFLAGS := -std=c++17 -Wall -O3 -pthread
 INC := -I include
 
 $(TARGET): $(OBJECTS)

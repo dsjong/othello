@@ -1,3 +1,5 @@
+#include <bits/stdc++.h>
+
 /**
  * @file common.hpp
  * @author Dion Ong
@@ -69,6 +71,7 @@ public:
     
     int count_player() const;
     int count_opponent() const;
+    int count() const;
     bool is_terminal();
     void print() const;
     void randomize(int seed);
@@ -126,10 +129,16 @@ double reward_table(Board &board) {
 
 class Engine {
 public:
+    int turn;
     double (*heuristic_function)(Board&);
 
     virtual double evaluation(Board& board, int depth) { return 0; }
     virtual Move get_move(Board& board, std::chrono::milliseconds time);
+    void get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move &move);
+
+private:
+    std::condition_variable cv;
+    std::mutex engine_mutex;
 };
 
 
@@ -139,7 +148,10 @@ public:
     std::map<std::pair<Board, int>, std::pair<double, double>> table;
 
     double evaluation(Board& board, int depth);
-    double search(Board& board, double alpha, double beta, int depth);
+    double search(Board& board, double alpha, double beta, int depth, int turn);
+
+private:
+    std::mutex map_mutex;
 };
 
 
@@ -149,6 +161,10 @@ int Board::count_player() const {
 
 int Board::count_opponent() const {
     return __builtin_popcountll(opponent);
+}
+
+int Board::count() const {
+    return count_player() + count_opponent();
 }
 
 bool Board::is_terminal() {
@@ -321,6 +337,7 @@ void Board::undo_move(const Move &move) {
     opponent ^= move.flip;
 }
 
+
 /**
  * @brief Returns the best move for a particular board
  * 
@@ -329,43 +346,76 @@ void Board::undo_move(const Move &move) {
  * @return Move object with populated pos and flip
  */
 Move Engine::get_move(Board& board, std::chrono::milliseconds time) {
+    turn = board.count() + 1;
+    auto start = std::chrono::steady_clock::now();
     uint64_t moves = board.get_moves();
     if (moves == 0) {
         Move move = board.do_move(-1);
         board.undo_move(move);
         return move;
     }
-    double best_eval = -INF-1;
-    Move best_move;
-    for (int depth = 1; depth < 20; depth++) {
-        for (; moves > 0; moves -= moves & (-moves)) {
-            Move move = board.do_move(__builtin_ctzll(moves));
-            if (-evaluation(board, 6) > best_eval) {
-                best_move = move;
-            }
-            best_move = move;
-            board.undo_move(move);
+    Move move{-1, 0};
+    for (int depth = 1; depth < 15; depth++) {
+        Move cur_move{-1, 0};
+        std::thread(&Engine::get_move_at_depth, this, board.player, board.opponent, depth, std::ref(cur_move)).detach();
+        // auto loop_start = std::chrono::steady_clock::now();
+        std::unique_lock<std::mutex> lk(engine_mutex);
+        auto now = std::chrono::steady_clock::now();
+        auto time_left = time - (now - start);
+        if (!cv.wait_for(lk, time_left, [&]{ return cur_move.pos != -1; } )) {
+            std::cout << "finished at depth " << depth << "\n";
+            return move;
         }
+        // std::cout << depth << " is finished" << std::endl;
+        // auto loop_end = std::chrono::steady_clock::now();
+        // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(time_left).count() << " is time left\n";
+        // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(loop_end - loop_start).count() << " is loop time\n";
+        std::swap(move, cur_move);
     }
-    return best_move;
+    return move;
+}
+
+void Engine::get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move &move) {
+    Board board(player, opponent);
+    uint64_t moves = board.get_moves();
+    Move best_move{-1, 0};
+    double best_eval = -INF-1;
+
+    for (; moves > 0; moves -= moves & (-moves)) {
+        Move move = board.do_move(__builtin_ctzll(moves));
+        double score;
+        score = -evaluation(board, depth);
+        if (score > best_eval) {
+            best_move = move;
+            best_eval = score;
+        }
+        board.undo_move(move);
+    }
+    move = best_move;
+    cv.notify_all();
 }
 
 
 double AB_Engine::evaluation(Board& board, int depth) {
-    return search(board, -INF, INF, depth);
+    return search(board, -INF, INF, depth, board.count());
 }
 
-double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
+double AB_Engine::search(Board& board, double alpha, double beta, int depth, int turn) {
+    if (this->turn != turn) return 0;
     std::pair<Board, int> key = {board, depth};
-    if (table.count(key)) {
-        auto [lower, upper] = table[key];
-        if (lower >= beta)
-            return lower;
-        if (upper <= alpha)
-            return upper;
-        alpha = std::max(alpha, lower);
-        beta = std::min(beta, upper);
+    {
+        std::lock_guard<std::mutex> lk(map_mutex);
+        if (table.count(key)) {
+            auto [lower, upper] = table[key];
+            if (lower >= beta)
+                return lower;
+            if (upper <= alpha)
+                return upper;
+            alpha = std::max(alpha, lower);
+            beta = std::min(beta, upper);
+        }
     }
+    
     if (board.is_terminal()) {
         int diff = board.count_player() - board.count_opponent();
         return ((diff > 0) - (diff < 0)) * INF;
@@ -378,30 +428,36 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth) {
     uint64_t moves = board.get_moves();
     if (moves == 0) {
         Move move = board.do_move(-1);
-        val = std::max(val, -search(board, -beta, -a, depth));
+        val = std::max(val, -search(board, -beta, -a, depth, turn));
         a = std::max(a, val);
         board.undo_move(move);
     }
     for (; moves > 0 && val < beta; moves -= moves & (-moves)) {
         Move move = board.do_move(__builtin_ctzll(moves));
-        val = std::max(val, -search(board, -beta, -a, depth - 1));
+        val = std::max(val, -search(board, -beta, -a, depth - 1, turn));
         a = std::max(a, val);
         board.undo_move(move);
     }
-    if (val <= alpha) {
-        table[key].second = val;
+    {
+        std::lock_guard<std::mutex> lk(map_mutex);
+        if (val <= alpha) {
+            table[key].second = val;
+        }
+        if (val > alpha && val < beta) {
+            table[key].second = val;
+            table[key].first = val;
+        }
+        if (val >= beta) {
+            table[key].first = val;
+        }
     }
-    if (val > alpha && val < beta) {
-        table[key].second = val;
-        table[key].first = val;
-    }
-    if (val >= beta) {
-        table[key].first = val;
-    }
+    
     // board.print();
     // printf("evaluation: %f\n\n", val);
     return val;
 }
+using namespace std::chrono_literals;
+
 int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(NULL);
@@ -428,7 +484,7 @@ int main() {
         if (id)
             std::swap(player, opponent);
         Board board(player, opponent);
-        Move move = engine.get_move(board, 150);
+        Move move = engine.get_move(board, 130ms);
         std::cout << move << " MSG " << player << " " << opponent << std::endl;
     }
 }
