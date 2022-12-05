@@ -20,7 +20,7 @@ int Board::count() const {
 }
 
 bool Board::is_terminal() {
-    return get_moves() + get_opponent_moves() == 0;
+    return get_moves() | get_opponent_moves();
 }
 
 void Board::print() const {
