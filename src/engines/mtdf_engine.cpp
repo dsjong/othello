@@ -1,15 +1,29 @@
-#include "engines/ab_engine.hpp"
+#include "engines/mtdf_engine.hpp"
 #include "board.hpp"
 #include "common.hpp"
 
 #include <iostream>
 #include <utility>
 
-double AB_Engine::evaluation(Board& board, int depth) {
-    return search(board, -INF, INF, depth, board.count());
+#define EPS 1e-9
+
+double MTDF_Engine::evaluation(Board& board, int depth) {
+    double g = 0;
+    double upper = INF;
+    double lower = -INF;
+    int turn = board.count();
+    while (lower < upper) {
+        double beta = std::max(g, lower + EPS);
+        g = search(board, beta - EPS, beta, depth, turn);
+        if (g < beta)
+            upper = g;
+        else
+            lower = g;
+    }
+    return g;
 }
 
-double AB_Engine::search(Board& board, double alpha, double beta, int depth, int turn) {
+double MTDF_Engine::search(Board& board, double alpha, double beta, int depth, int turn) {
     {
         std::lock_guard<std::mutex> lk(map_mutex);
         if (this->turn != turn) return 0;
