@@ -16,7 +16,8 @@
 #define BOARD_LEN       8
 #define INIT_PLAYER     0x0810000000
 #define INIT_OPPONENT   0x1008000000
-#define INF             1e9
+#define INF             1'000'000'000'000
+#define INF_EVAL        1'000'000'000
 
 static const int edges[4][10] = {
     {9, 0, 1, 2, 3, 4, 5, 6, 7, 14},
