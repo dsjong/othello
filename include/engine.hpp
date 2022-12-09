@@ -15,17 +15,19 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <string>
 
 class Engine {
 public:
+    std::string name;
     int turn;
-    double (*heuristic_function)(Board&);
+    long long (*heuristic_function)(Board&);
 
-    virtual double evaluation(Board& board, int depth) { return 0; }
+    virtual long long evaluation(Board& board, int depth) { return 0; }
     virtual Move get_move(Board& board, std::chrono::milliseconds time);
     void get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move* move);
 
-protected:
+private:
     std::condition_variable cv;
     std::mutex engine_mutex;
 };

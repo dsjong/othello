@@ -16,22 +16,10 @@ int main() {
     init_edge_table();
     AB_Engine engine1;
     MTDF_Engine engine2;
+    engine1.name = "AB_Engine";
+    engine2.name = "MTDF_Engine";
     engine1.heuristic_function = &heuristic1;
     engine2.heuristic_function = &heuristic1;
-
-    Board board;
-    for (int d = 0; d < 8; d++) {
-        for (int seed = 0; seed < 10000; seed++) {
-            board.randomize(seed);
-            engine1.turn = board.count();
-            engine2.turn = board.count();
-            long long ans1 = engine1.search(board, -INF, INF, d, board.count());
-            long long ans2 = engine2.search(board, -INF, INF, d, board.count());
-            std::cout << d << " " << seed << " " << ans1 << " " << ans2 << "\n";
-            assert(ans1 == ans2);
-        }
-    }
-    return 0;
 
     int games = 1;
     for (int i = 0; i < games; i++) {
@@ -41,15 +29,18 @@ int main() {
             auto start = std::chrono::steady_clock::now();
             board.print();
             int move;
+            std::string name;
             if (parity == 0) {
                 move = engine1.get_move(board, 145ms).pos;
+                name = engine1.name;
             }
             else {
                 move = engine2.get_move(board, 150ms).pos;
+                name = engine2.name;
             }
             auto end = std::chrono::steady_clock::now();
             int elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-            std::cout << "player " << parity  << " took " << elapsed << "ms" << std::endl;
+            std::cout << name << " took " << elapsed << "ms" << std::endl;
             board.do_move(move);
             parity ^= 1;
         }

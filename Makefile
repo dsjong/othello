@@ -13,7 +13,7 @@ INC := -I include
 
 $(TARGET): $(OBJECTS)
 	@echo " Linking..."
-	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
+	@echo " $(CC) $^ -o $(TARGET)"; $(CC) $^ -o $(TARGET)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(BUILDDIR)
@@ -52,15 +52,19 @@ submission:
 
 # Tests
 frontier: $(BUILDDIR)/board.o
-	$(CC) $(CFLAGS) tests/frontier.cpp $(BUILDDIR)/board.o $(INC) $(LIB) -o bin/frontier
+	$(CC) $(CFLAGS) tests/frontier.cpp $(BUILDDIR)/board.o $(INC) -o bin/frontier
 
 mobility: $(BUILDDIR)/board.o
-	$(CC) $(CFLAGS) tests/mobility.cpp $(BUILDDIR)/board.o $(INC) $(LIB) -o bin/mobility
+	$(CC) $(CFLAGS) tests/mobility.cpp $(BUILDDIR)/board.o $(INC) -o bin/mobility
 
 move: $(BUILDDIR)/board.o
-	$(CC) $(CFLAGS) tests/move.cpp $(BUILDDIR)/board.o $(INC) $(LIB) -o bin/move
+	$(CC) $(CFLAGS) tests/move.cpp $(BUILDDIR)/board.o $(INC) -o bin/move
 
 stability: $(BUILDDIR)/edgetable.o
-	$(CC) $(CFLAGS) tests/stability.cpp $(BUILDDIR)/edgetable.o $(INC) $(LIB) -o bin/stability
+	$(CC) $(CFLAGS) tests/stability.cpp $(BUILDDIR)/edgetable.o $(INC) -o bin/stability
+
+search: $(OBJECTS)
+	@rm -f build/main.o
+	$(CC) $(CFLAGS) tests/search.cpp $(filter-out build/main.o,$(OBJECTS)) $(INC) -o bin/search
 
 .PHONY: clean submission

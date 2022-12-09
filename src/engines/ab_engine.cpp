@@ -5,11 +5,11 @@
 #include <iostream>
 #include <utility>
 
-double AB_Engine::evaluation(Board& board, int depth) {
+long long AB_Engine::evaluation(Board& board, int depth) {
     return search(board, -INF, INF, depth, board.count());
 }
 
-double AB_Engine::search(Board& board, double alpha, double beta, int depth, int turn) {
+long long AB_Engine::search(Board& board, long long alpha, long long beta, int depth, int turn) {
     {
         std::lock_guard<std::mutex> lk(map_mutex);
         if (this->turn != turn) return 0;
@@ -26,12 +26,12 @@ double AB_Engine::search(Board& board, double alpha, double beta, int depth, int
     
     if (board.is_terminal()) {
         int diff = board.count_player() - board.count_opponent();
-        return ((diff > 0) - (diff < 0)) * INF;
+        return ((diff > 0) - (diff < 0)) * INF_EVAL;
     }
     if (depth == 0)
         return (*heuristic_function)(board);
     
-    double val, a;
+    long long val, a;
     val = -INF, a = alpha;
     uint64_t moves = board.get_moves();
     if (moves == 0) {

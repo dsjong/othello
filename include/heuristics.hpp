@@ -4,7 +4,7 @@
 #include "common.hpp"
 #include "edgetable.hpp"
 
-double reward[64] = {
+long long reward[64] = {
     120, -20, 20, 5, 5, 20, -20, 120,
     -20, -40, -5, -5, -5, -5, -40, -20,
     20, -5, 15, 3, 3, 15, -5, 20,
@@ -15,8 +15,8 @@ double reward[64] = {
     120, -20, 20, 5, 5, 20, -20, 120
 };
 
-double reward_table(Board& board) {
-    double ret = 0;
+long long reward_table(Board& board) {
+    long long ret = 0;
     for (int i = 0; i < 64; i++) {
         if (board.player & (1 << i))
             ret += reward[i];
@@ -26,7 +26,7 @@ double reward_table(Board& board) {
     return ret;
 }
 
-double greedy(Board& board) {
+long long greedy(Board& board) {
     return board.count_player() - board.count_opponent();
 }
 
@@ -44,25 +44,23 @@ double potential_mobility(Board& board) {
     return (frontier - opponent_frontier) / (frontier + opponent_frontier);
 }
 
-double stability(Board& board) {
-    double res = 0;
+long long stability(Board& board) {
+    long long res = 0;
     for (int i = 0; i < 4; i++) {
         int val = 0;
         for (int j : edges[i]) {
             val *= 3;
-            if (board.player & (1ull << j)) {
+            if (board.player & (1ull << j))
                 val += 1;
-            }
-            else if (board.opponent & (1ull << j)) {
+            else if (board.opponent & (1ull << j))
                 val += 2;
-            }
         }
         res += edge_table[val];
     }
     return res;
 }
 
-double heuristic1(Board& board) {
+long long heuristic1(Board& board) {
     int move_number = board.count() - 3;
     double esac = 312 + 6.24 * move_number;
     double cmac = move_number <= 25 ? 50 + 2 * move_number : 75 + move_number;
@@ -70,5 +68,5 @@ double heuristic1(Board& board) {
     score += esac * stability(board);
     score += cmac * mobility(board);
     score += 99 * potential_mobility(board);
-    return score;
+    return score / 1000;
 }

@@ -24,7 +24,7 @@ Move Engine::get_move(Board& board, std::chrono::milliseconds time) {
         return move;
     }
     Move move;
-    for (int depth = 1; depth < 15; depth++) {
+    for (int depth = 1; depth < 12; depth++) {
         Move* cur_move = new Move;
         std::thread(&Engine::get_move_at_depth, this, board.player, board.opponent, depth, cur_move).detach();
         std::unique_lock<std::mutex> lk(engine_mutex);
@@ -36,6 +36,7 @@ Move Engine::get_move(Board& board, std::chrono::milliseconds time) {
         }
         move = *cur_move;
     }
+    std::cout << "finished all depths\n";
     return move;
 }
 
@@ -43,12 +44,12 @@ void Engine::get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Mo
     Board board(player, opponent);
     uint64_t moves = board.get_moves();
     Move best_move;
-    double best_eval = -INF;
+    long long best_eval = -INF;
     bool moved = false;
 
     for (; moves > 0; moves -= moves & (-moves)) {
         Move move = board.do_move(__builtin_ctzll(moves));
-        double score;
+        long long score;
         score = -evaluation(board, depth);
         if (score > best_eval || !moved) {
             moved = true;

@@ -9,11 +9,12 @@
 
 class MTDF_Engine : public Engine {
 public:
-    std::map<Board, std::pair<double, double>> table[20];
+    std::map<Board, std::pair<long long, long long>> table[20];
 
-    double evaluation(Board& board, int depth);
-    double search(Board& board, double alpha, double beta, int depth, int turn);
+    long long evaluation(Board& board, int depth);
+    long long search(Board& board, long long alpha, long long beta, int depth, int player);
 
 private:
     std::mutex map_mutex;
+    long long g = 0;
 };
