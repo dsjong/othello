@@ -4,7 +4,7 @@ int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(NULL);
     init_edge_table();
-    AB_Engine engine;
+    MTDF_Engine engine;
     engine.heuristic_function = &heuristic1;
     int id, boardSize;
     std::cin >> id >> boardSize;
@@ -28,6 +28,6 @@ int main() {
             std::swap(player, opponent);
         Board board(player, opponent);
         Move move = engine.get_move(board, 145ms);
-        std::cout << move << " MSG " << player << " " << opponent << std::endl;
+        std::cout << move << std::endl;
     }
 }

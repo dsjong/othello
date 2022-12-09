@@ -14,11 +14,9 @@ using namespace std::chrono_literals;
 
 int main() {
     init_edge_table();
-    AB_Engine engine1;
     MTDF_Engine engine2;
-    engine1.name = "AB_Engine";
-    engine2.name = "MTDF_Engine";
-    engine1.heuristic_function = &heuristic1;
+    AB_Engine engine1;
+    engine1.heuristic_function = &heuristic2;
     engine2.heuristic_function = &heuristic1;
 
     int games = 1;
@@ -49,7 +47,7 @@ int main() {
         int score1 = board.count_player();
         int score2 = board.count_opponent();
         if (parity) std::swap(score1, score2);
-        std::cout << "Engine 1: " << score1 << std::endl; 
-        std::cout << "Engine 2: " << score2 << std::endl; 
+        std::cout << engine1.name << ": " << score1 << std::endl; 
+        std::cout << engine2.name << ": " << score2 << std::endl; 
     }
 }

@@ -9,6 +9,7 @@
 
 class AB_Engine : public Engine {
 public:
+    std::string name = "AB_Engine";
     std::map<Board, std::pair<long long, long long>> table[20];
 
     long long evaluation(Board& board, int depth);

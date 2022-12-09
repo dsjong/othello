@@ -24,7 +24,7 @@ Move Engine::get_move(Board& board, std::chrono::milliseconds time) {
         return move;
     }
     Move move;
-    for (int depth = 1; depth < 12; depth++) {
+    for (int depth = 1; depth < 14; depth++) {
         Move* cur_move = new Move;
         std::thread(&Engine::get_move_at_depth, this, board.player, board.opponent, depth, cur_move).detach();
         std::unique_lock<std::mutex> lk(engine_mutex);

@@ -4,6 +4,8 @@
 #include "common.hpp"
 #include "edgetable.hpp"
 
+#include <math.h>
+
 long long reward[64] = {
     120, -20, 20, 5, 5, 20, -20, 120,
     -20, -40, -5, -5, -5, -5, -40, -20,
@@ -68,5 +70,16 @@ long long heuristic1(Board& board) {
     score += esac * stability(board);
     score += cmac * mobility(board);
     score += 99 * potential_mobility(board);
-    return score / 1000;
+    return cbrt(score);
+}
+
+long long heuristic2(Board& board) {
+    int move_number = board.count() - 3;
+    double esac = 312 + 6.24 * move_number;
+    double cmac = move_number <= 25 ? 50 + 2 * move_number : 75 + move_number;
+    double score = 0;
+    score += esac * stability(board);
+    score += cmac * mobility(board);
+    score += 99 * potential_mobility(board);
+    return score;
 }
