@@ -15,6 +15,7 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <map>
 #include <string>
 
 class Engine {
@@ -22,6 +23,7 @@ public:
     std::string name;
     int turn;
     long long (*heuristic_function)(Board&);
+    std::map<Board, std::pair<long long, long long>> table[20];
 
     virtual long long evaluation(Board& board, int depth) { return 0; }
     virtual Move get_move(Board& board, std::chrono::milliseconds time);
@@ -30,4 +32,5 @@ public:
 private:
     std::condition_variable cv;
     std::mutex engine_mutex;
+    Move best_move;
 };
