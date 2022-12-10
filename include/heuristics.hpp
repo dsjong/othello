@@ -70,7 +70,8 @@ long long heuristic1(Board& board) {
     score += esac * stability(board);
     score += cmac * mobility(board);
     score += 99 * potential_mobility(board);
-    return cbrt(score);
+    int sgn = (score > 0) - (score < 0);
+    return sqrt(abs(score)) * sgn;
 }
 
 long long heuristic2(Board& board) {
@@ -82,4 +83,16 @@ long long heuristic2(Board& board) {
     score += cmac * mobility(board);
     score += 99 * potential_mobility(board);
     return score;
+}
+
+long long heuristic3(Board& board) {
+    int move_number = board.count() - 3;
+    double esac = 312 + 6.24 * move_number;
+    double cmac = move_number <= 25 ? 50 + 2 * move_number : 75 + move_number;
+    double score = 0;
+    score += esac * stability(board);
+    score += cmac * mobility(board);
+    score += 99 * potential_mobility(board);
+    int sgn = (score > 0) - (score < 0);
+    return log(abs(score)) * sgn;
 }

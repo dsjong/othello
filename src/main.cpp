@@ -14,10 +14,11 @@ using namespace std::chrono_literals;
 
 int main() {
     init_edge_table();
+    MTDF_Engine engine1;
     MTDF_Engine engine2;
-    AB_Engine engine1;
-    engine1.heuristic_function = &heuristic2;
-    engine2.heuristic_function = &heuristic1;
+    engine1.heuristic_function = &heuristic1;
+    engine2.heuristic_function = &heuristic2;
+    engine2.name = "MTDF_Engine_Exact";
 
     int games = 1;
     for (int i = 0; i < games; i++) {
