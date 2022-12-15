@@ -11,6 +11,7 @@
 #pragma once
 
 #include "board.hpp"
+#include "heuristics.hpp"
 #include "move.hpp"
 
 #include <chrono>
@@ -20,14 +21,13 @@
 
 class Engine {
 public:
-    std::string name;
     int turn;
-    long long (*heuristic_function)(Board&);
+    long long (*heuristic_function)(Board&) = &heuristic1;
     std::map<Board, std::pair<long long, long long>> table[20];
 
-    virtual long long evaluation(Board& board, int depth) { return 0; }
+    virtual long long evaluation(Board& board, int depth) = 0;
     virtual Move get_move(Board& board, std::chrono::milliseconds time);
-    void get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move* move);
+    virtual void get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move* move);
 
 private:
     std::condition_variable cv;

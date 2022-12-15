@@ -7,3 +7,5 @@ bin/*
 
 # Ignore the submission
 submission/submission.cpp
+
+out.txt

@@ -31,12 +31,16 @@ Move Engine::get_move(Board& board, std::chrono::milliseconds time) {
         auto now = std::chrono::steady_clock::now();
         auto time_left = time - (now - start);
         if (!cv.wait_for(lk, time_left, [&]{ return cur_move->pos != -1; } )) {
+            #ifdef DEBUG
             std::cout << "finished until depth " << depth - 1 << std::endl;
+            #endif
             return move;
         }
         move = *cur_move;
     }
+    #ifdef DEBUG
     std::cout << "finished all depths\n";
+    #endif
     return move;
 }
 
