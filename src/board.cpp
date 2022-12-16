@@ -37,18 +37,25 @@ void Board::print() const {
 }
 
 /**
- * @brief Randomizes the current board
+ * @brief Randomizes the board by playing 8 random moves
  * 
  * @param seed 
  */
 void Board::randomize(int seed) {
     std::mt19937 rng(seed);
-    std::uniform_int_distribution<uint64_t> distrib(0, -1);
-    uint64_t block = distrib(rng);
-    uint64_t player = distrib(rng);
-    uint64_t opponent = distrib(rng);
-    this->player = player & (~block);
-    this->opponent = opponent & (~block) & (~player);
+    for (int i = 0; i < 8; i++) {
+        uint64_t moves = get_moves();
+        int cnt = __builtin_popcountll(moves);
+        if (moves) {
+            std::uniform_int_distribution<uint64_t> distrib(0, cnt - 1);
+            uint64_t idx = distrib(rng);
+            for (int i = 0; i < idx; i++)
+                moves -= moves & (-moves);
+            do_move(__builtin_ctzll(moves));
+        }
+        else
+            do_move(-1);
+    }
 }
 
 /**

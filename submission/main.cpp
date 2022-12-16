@@ -4,7 +4,7 @@ int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(NULL);
     init_edge_table();
-    AB_Engine engine;
+    MTDF_Engine engine;
     int id, boardSize;
     std::cin >> id >> boardSize;
     while (true) {

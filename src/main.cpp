@@ -15,12 +15,14 @@
 using namespace std::chrono_literals;
 
 int main(int argc, char** argv) {
-    if (argc != 4) {
-        std::cout << "usage: ./runner num-games engine1 engine2" << std::endl;
+    if (argc != 5) {
+        std::cout << "usage: ./runner num-games engine1 engine2 seed" << std::endl;
     }
     
     init_edge_table();
     int games = std::stoi(argv[1]);
+    int seed = std::stoi(argv[4]);
+    srand(seed);
     
     std::map<std::string, Engine*> engines;
     engines["random"] = new Random_Engine;
@@ -30,8 +32,12 @@ int main(int argc, char** argv) {
     double total1 = 0;
     double total2 = 0;
     for (int i = 0; i < games; i++) {
+        int cur_seed = rand();
         for (int j = 0; j < 2; j++) {
             Board board;
+            if (seed > 0) {
+                board.randomize(cur_seed);
+            }
             int parity = j;
             while (!board.is_terminal()) {
                 auto start = std::chrono::steady_clock::now();
