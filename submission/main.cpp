@@ -4,8 +4,7 @@ int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(NULL);
     init_edge_table();
-    MTDF_Engine engine;
-    engine.heuristic_function = &heuristic1;
+    AB_Engine engine;
     int id, boardSize;
     std::cin >> id >> boardSize;
     while (true) {

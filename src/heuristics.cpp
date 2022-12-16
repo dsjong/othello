@@ -5,31 +5,27 @@
 
 #include <math.h>
 
-long long reward[64] = {
-    120, -20, 20, 5, 5, 20, -20, 120,
-    -20, -40, -5, -5, -5, -5, -40, -20,
-    20, -5, 15, 3, 3, 15, -5, 20,
-    5, -5, 3, 3, 3, 3, -5, 5,
-    5, -5, 3, 3, 3, 3, -5, 5,
-    20, -5, 15, 3, 3, 15, -5, 20,
-    -20, -40, -5, -5, -5, -5, -40, -20,
-    120, -20, 20, 5, 5, 20, -20, 120
-};
+// long long reward[64] = {
+//     120, -20, 20, 5, 5, 20, -20, 120,
+//     -20, -40, -5, -5, -5, -5, -40, -20,
+//     20, -5, 15, 3, 3, 15, -5, 20,
+//     5, -5, 3, 3, 3, 3, -5, 5,
+//     5, -5, 3, 3, 3, 3, -5, 5,
+//     20, -5, 15, 3, 3, 15, -5, 20,
+//     -20, -40, -5, -5, -5, -5, -40, -20,
+//     120, -20, 20, 5, 5, 20, -20, 120
+// };
 
-long long reward_table(Board& board) {
-    long long ret = 0;
-    for (int i = 0; i < 64; i++) {
-        if (board.player & (1 << i))
-            ret += reward[i];
-        else if (board.opponent & (1 << i))
-            ret -= reward[i];
-    }
-    return ret;
-}
-
-long long greedy(Board& board) {
-    return board.count_player() - board.count_opponent();
-}
+// long long reward_table(Board& board) {
+//     long long ret = 0;
+//     for (int i = 0; i < 64; i++) {
+//         if (board.player & (1 << i))
+//             ret += reward[i];
+//         else if (board.opponent & (1 << i))
+//             ret -= reward[i];
+//     }
+//     return ret;
+// }
 
 double mobility(Board& board) {
     double moves = __builtin_popcountll(board.get_moves());
@@ -61,19 +57,7 @@ long long stability(Board& board) {
     return res;
 }
 
-long long heuristic1(Board& board) {
-    int move_number = board.count() - 3;
-    double esac = 312 + 6.24 * move_number;
-    double cmac = move_number <= 25 ? 50 + 2 * move_number : 75 + move_number;
-    double score = 0;
-    score += esac * stability(board);
-    score += cmac * mobility(board);
-    score += 99 * potential_mobility(board);
-    int sgn = (score > 0) - (score < 0);
-    return sqrt(abs(score)) * sgn;
-}
-
-long long heuristic2(Board& board) {
+long long heuristic(Board& board) {
     int move_number = board.count() - 3;
     double esac = 312 + 6.24 * move_number;
     double cmac = move_number <= 25 ? 50 + 2 * move_number : 75 + move_number;
@@ -84,14 +68,9 @@ long long heuristic2(Board& board) {
     return score;
 }
 
-long long heuristic3(Board& board) {
-    int move_number = board.count() - 3;
-    double esac = 312 + 6.24 * move_number;
-    double cmac = move_number <= 25 ? 50 + 2 * move_number : 75 + move_number;
-    double score = 0;
-    score += esac * stability(board);
-    score += cmac * mobility(board);
-    score += 99 * potential_mobility(board);
+long long heuristic_sqrt(Board& board) {
+    long long score = heuristic(board);
     int sgn = (score > 0) - (score < 0);
-    return log(abs(score)) * sgn;
+    return sqrt(abs(score)) * sgn;
 }
+

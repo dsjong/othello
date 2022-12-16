@@ -22,7 +22,7 @@
 class Engine {
 public:
     int turn;
-    long long (*heuristic_function)(Board&) = &heuristic1;
+    long long (*heuristic_function)(Board&) = &heuristic;
     std::map<Board, std::pair<long long, long long>> table[20];
 
     virtual long long evaluation(Board& board, int depth) = 0;

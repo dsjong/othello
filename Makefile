@@ -8,7 +8,7 @@ SUBMISSION := $(SUBDIR)/submission.cpp
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-CFLAGS := -std=c++17 -Wall -O3 -pthread
+override CFLAGS += -std=c++17 -Wall -O3 -pthread
 INC := -I include
 
 $(TARGET): $(OBJECTS)
@@ -33,17 +33,19 @@ submission:
 	@cat include/board.hpp >> $(SUBMISSION)
 	@cat include/heuristics.hpp >> $(SUBMISSION)
 	@cat include/engine.hpp >> $(SUBMISSION)
-	@cat include/engines/mtdf_engine.hpp >> $(SUBMISSION)
+	@cat include/engines/ab_engine.hpp >> $(SUBMISSION)
 
 	@cat src/board.cpp >> $(SUBMISSION)
 	@cat src/engine.cpp >> $(SUBMISSION)
-	@cat src/engines/mtdf_engine.cpp >> $(SUBMISSION)
+	@cat src/heuristics.cpp >> $(SUBMISSION)
+	@cat src/engines/ab_engine.cpp >> $(SUBMISSION)
 
 	@cat $(SUBDIR)/main.cpp >> $(SUBMISSION)
 	@sed -i '/^#include/d' $(SUBMISSION)
 	@sed -i '/^#pragma/d' $(SUBMISSION)
 	@sed -i '/^ \*/d' $(SUBMISSION)
 	@sed -i '/^\/\*\*/d' $(SUBMISSION)
+	@sed -i '/^\/\//d' $(SUBMISSION)
 	@sed -i '1i #include <bits/stdc++.h>' $(SUBMISSION)
 	@sed -i '2i #pragma GCC optimize ("O3")' $(SUBMISSION)
 	@awk -r 'NF' $(SUBMISSION) > tmp
