@@ -2,6 +2,7 @@
 #include "edgetable.hpp"
 #include "engine.hpp"
 #include "engines/ab_engine.hpp"
+#include "engines/minimax_engine.hpp"
 #include "engines/mtdf_engine.hpp"
 #include "engines/random_engine.hpp"
 #include "heuristics.hpp"
@@ -28,6 +29,7 @@ int main(int argc, char** argv) {
     engines["random"] = new Random_Engine;
     engines["ab"] = new AB_Engine;
     engines["mtdf"] = new MTDF_Engine;
+    engines["minimax"] = new Minimax_Engine;
 
     double total1 = 0;
     double total2 = 0;

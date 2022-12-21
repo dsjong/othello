@@ -47,25 +47,22 @@ Move Engine::get_move(Board& board, std::chrono::milliseconds time) {
 void Engine::get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move* move) {
     Board board(player, opponent);
     uint64_t moves = board.get_moves();
-    assert(moves);
-    long long score = evaluation(board, depth);
     Move best_move;
+    long long best_eval = -INF;
+    bool moved = false;
+
     for (; moves > 0; moves -= moves & (-moves)) {
+        turn++;
         Move move = board.do_move(__builtin_ctzll(moves));
-        long long lower;
-        if (board.is_terminal()) {
-            int diff = board.count_player() - board.count_opponent();
-            lower = ((diff > 0) - (diff < 0)) * INF_EVAL * -1;
-        }
-        else {
-            std::lock_guard<std::mutex> lk(engine_mutex);
-            lower = table[depth - 1][board].first;
+        long long score;
+        score = -evaluation(board, depth);
+        if (score > best_eval || !moved) {
+            moved = true;
+            best_move = move;
+            best_eval = score;
         }
         board.undo_move(move);
-        if (lower == score) {
-            best_move = move;
-            break;
-        }
+        turn--;
     }
     {
         std::lock_guard<std::mutex> lk(engine_mutex);

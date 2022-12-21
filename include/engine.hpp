@@ -23,13 +23,12 @@ class Engine {
 public:
     int turn;
     long long (*heuristic_function)(Board&) = &heuristic;
-    std::map<Board, std::pair<long long, long long>> table[20];
 
     virtual long long evaluation(Board& board, int depth) = 0;
     virtual Move get_move(Board& board, std::chrono::milliseconds time);
     virtual void get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move* move);
 
-private:
+protected:
     std::condition_variable cv;
     std::mutex engine_mutex;
     Move best_move;

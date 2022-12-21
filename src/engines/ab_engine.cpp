@@ -10,6 +10,35 @@ long long AB_Engine::evaluation(Board& board, int depth) {
     return search(board, -INF, INF, depth, board.count(), 1);
 }
 
+void AB_Engine::get_move_at_depth(uint64_t player, uint64_t opponent, int depth, Move* move) {
+    Board board(player, opponent);
+    uint64_t moves = board.get_moves();
+    long long score = evaluation(board, depth);
+    Move best_move;
+    for (; moves > 0; moves -= moves & (-moves)) {
+        Move move = board.do_move(__builtin_ctzll(moves));
+        long long lower;
+        if (board.is_terminal()) {
+            int diff = board.count_player() - board.count_opponent();
+            lower = ((diff > 0) - (diff < 0)) * INF_EVAL * -1;
+        }
+        else {
+            std::lock_guard<std::mutex> lk(engine_mutex);
+            lower = table[depth - 1][board].first;
+        }
+        board.undo_move(move);
+        if (lower == score) {
+            best_move = move;
+            break;
+        }
+    }
+    {
+        std::lock_guard<std::mutex> lk(engine_mutex);
+        *move = best_move;
+    }
+    cv.notify_all();
+}
+
 long long AB_Engine::search(Board& board, long long alpha, long long beta, int depth, int turn, int player) {
     {
         std::lock_guard<std::mutex> lk(map_mutex);

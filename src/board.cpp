@@ -43,7 +43,7 @@ void Board::print() const {
  */
 void Board::randomize(int seed) {
     std::mt19937 rng(seed);
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 6; i++) {
         uint64_t moves = get_moves();
         int cnt = __builtin_popcountll(moves);
         if (moves) {

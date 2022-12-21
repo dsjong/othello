@@ -20,6 +20,10 @@ public:
     uint64_t flip = 0;
 
     friend std::ostream& operator<<(std::ostream& os, const Move& move) {
+        if (move.pos == -1) {
+            os << "PASS\n";
+            return os;
+        }
         os << (char) ('a' + move.pos % 8);
         os << (char) ('1' + move.pos / 8);
         return os;
