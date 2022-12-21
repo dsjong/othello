@@ -1,3 +1,14 @@
+/**
+ * @file minimax_engine.hpp
+ * @author Andrew Wang
+ * @brief Class for minimax engine
+ * @version 0.1
+ * @date 2022-12-21
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #pragma once
 
 #include "board.hpp"

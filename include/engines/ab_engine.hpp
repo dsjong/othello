@@ -1,3 +1,14 @@
+/**
+ * @file ab_engine.hpp
+ * @author Dion Ong
+ * @brief Class for AB engine using a transposition table
+ * @version 0.1
+ * @date 2022-12-21
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #pragma once
 
 #include "board.hpp"

@@ -47,8 +47,8 @@ void Board::randomize(int seed) {
         uint64_t moves = get_moves();
         int cnt = __builtin_popcountll(moves);
         if (moves) {
-            std::uniform_int_distribution<uint64_t> distrib(0, cnt - 1);
-            uint64_t idx = distrib(rng);
+            std::uniform_int_distribution<int> distrib(0, cnt - 1);
+            int idx = distrib(rng);
             for (int i = 0; i < idx; i++)
                 moves -= moves & (-moves);
             do_move(__builtin_ctzll(moves));
