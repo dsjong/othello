@@ -22,6 +22,7 @@ long long MTDF_Engine::evaluation(Board& board, int depth) {
 }
 
 long long MTDF_Engine::search(Board& board, long long alpha, long long beta, int depth, int turn, int player) {
+    int best_move = -1;
     {
         std::lock_guard<std::mutex> lk(map_mutex);
         if (this->turn != turn)
@@ -35,6 +36,8 @@ long long MTDF_Engine::search(Board& board, long long alpha, long long beta, int
             alpha = std::max(alpha, lower);
             beta = std::min(beta, upper);
         }
+        if (depth > 0 && best[depth - 1].count(board))
+            best_move = best[depth - 1][board];
     }
     
     if (board.is_terminal()) {
@@ -55,9 +58,23 @@ long long MTDF_Engine::search(Board& board, long long alpha, long long beta, int
             board.undo_move(move);
         }
         else {
-            for (; moves > 0 && val < beta; moves -= moves & (-moves)) {
-                Move move = board.do_move(__builtin_ctzll(moves));
+            if (best_move != -1) {
+                moves -= 1ull << best_move;
+                Move move = board.do_move(best_move);
                 val = std::max(val, search(board, a, beta, depth - 1, turn, -player));
+                a = std::max(a, val);
+                board.undo_move(move);
+                if (val >= beta)
+                    goto fail;
+            }
+            for (; moves > 0 && val < beta; moves -= moves & (-moves)) {
+                int cur_move = __builtin_ctzll(moves);
+                Move move = board.do_move(cur_move);
+                long long new_val = search(board, a, beta, depth - 1, turn, -player);
+                if (new_val > val) {
+                    val = new_val;
+                    best_move = cur_move;
+                }
                 a = std::max(a, val);
                 board.undo_move(move);
             }
@@ -72,16 +89,32 @@ long long MTDF_Engine::search(Board& board, long long alpha, long long beta, int
             board.undo_move(move);
         }
         else {
-            for (; moves > 0 && val > alpha; moves -= moves & (-moves)) {
-                Move move = board.do_move(__builtin_ctzll(moves));
+            if (best_move != -1) {
+                moves -= 1ull << best_move;
+                Move move = board.do_move(best_move);
                 val = std::min(val, search(board, alpha, b, depth - 1, turn, -player));
+                b = std::min(b, val);
+                board.undo_move(move);
+                if (val <= alpha)
+                    goto fail;
+            }
+            for (; moves > 0 && val > alpha; moves -= moves & (-moves)) {
+                int cur_move = __builtin_ctzll(moves);
+                Move move = board.do_move(cur_move);
+                long long new_val = search(board, alpha, b, depth - 1, turn, -player);
+                if (new_val < val) {
+                    val = new_val;
+                    best_move = cur_move;
+                }
                 b = std::min(b, val);
                 board.undo_move(move);
             }
         }
     }
+    fail:;
     {
         std::lock_guard<std::mutex> lk(map_mutex);
+        best[depth][board] = best_move;
         if (val != LONG_LONG_MAX && val != LONG_LONG_MIN) {
             bool exists = table[depth].count(board);
             if (val <= alpha) {

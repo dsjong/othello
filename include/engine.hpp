@@ -31,5 +31,4 @@ public:
 protected:
     std::condition_variable cv;
     std::mutex engine_mutex;
-    Move best_move;
 };
