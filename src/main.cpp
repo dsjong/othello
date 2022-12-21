@@ -18,6 +18,7 @@ using namespace std::chrono_literals;
 int main(int argc, char** argv) {
     if (argc != 5) {
         std::cout << "usage: ./runner num-games engine1 engine2 seed" << std::endl;
+        return 0;
     }
     
     init_edge_table();
