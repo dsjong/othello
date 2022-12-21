@@ -10,7 +10,11 @@ GitHub: https://github.com/dsjong/othello/
 
 ## Description
 
-Othello is a two player strategy game played on an 8×8 board. Read the rules [here](https://www.worldothello.org/about/about-othello/othello-rules/official-rules/english).
+Othello is a two player strategy game played on an 8×8 board. The game uses 64 disks which are white on one side and black on the other. Players take turns placing disks with their assigned color facing up in a way that outflanks some of the opponent's disks. Doing so flips the outflanked disks, turning them into the current player's color. The objective is to have majority of the disks displaying one's color when the last playable square is filled. Read the rules [here](https://www.worldothello.org/about/about-othello/othello-rules/official-rules/english).
+
+We implement an iterative deepening MTDF engine that searches to the maximum depth it can reach within 150 ms. This improves on Alpha-Beta pruning with transposition tables by only using null windows for each evaluation. To further increase search depth, the implementation of the game is optimized with bitboarding techniques that parallelize board operations (see `src/board.cpp`).
+
+The search uses a heuristic function based on a [paper](https://stacks.stanford.edu/file/druid:wk764yw7162/wk764yw7162.pdf) by Rosenbloom. The function considers three measures when assessing the score of the state: mobility, potential mobility, and edge stability. The first two measures maximize the number of options available to the player at any point, while stability helps the player capture valuable squares such as corners. Implementations of these can be found in `src/heuristics.cpp`. 
 
 ## Testing
 
@@ -29,11 +33,11 @@ To run the test script:
      | Engine    | Description                                               |
      | --------- | --------------------------------------------------------- |
      | `ab`      | Alpha-beta agent with transposition table                 |
-     | `minimax` | [MTDF](http://people.csail.mit.edu/plaat/mtdf.html) agent |
-     | `mtdf`    | Minimax agent                                             |
+     | `mtdf` | [MTDF](http://people.csail.mit.edu/plaat/mtdf.html) agent |
+     | `minimax`    | Minimax agent                                             |
      | `random`  | Random agent                                              |
 
-   * `engine2`-- the second engine to play (same choices as the first engine).
+   * `engine2` -- the second engine to play (same choices as the first engine).
 
    * `seed` -- positive integer seed used to randomize the starting board. If seed is `0`, no randomization is used and the game starts from the standard starting position.
 
