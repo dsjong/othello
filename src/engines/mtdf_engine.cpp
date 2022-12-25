@@ -58,17 +58,8 @@ long long MTDF_Engine::search(Board& board, long long alpha, long long beta, int
             board.undo_move(move);
         }
         else {
-            if (best_move != -1) {
-                moves -= 1ull << best_move;
-                Move move = board.do_move(best_move);
-                val = std::max(val, search(board, a, beta, depth - 1, turn, -player));
-                a = std::max(a, val);
-                board.undo_move(move);
-                if (val >= beta)
-                    goto fail;
-            }
-            for (; moves > 0 && val < beta; moves -= moves & (-moves)) {
-                int cur_move = __builtin_ctzll(moves);
+            auto try_move = [&](int cur_move) {
+                moves -= 1ull << cur_move;
                 Move move = board.do_move(cur_move);
                 long long new_val = search(board, a, beta, depth - 1, turn, -player);
                 if (new_val > val) {
@@ -77,6 +68,15 @@ long long MTDF_Engine::search(Board& board, long long alpha, long long beta, int
                 }
                 a = std::max(a, val);
                 board.undo_move(move);
+            };
+            if (best_move != -1) {
+                try_move(best_move);
+                if (val >= beta)
+                    goto fail;
+            }
+            while (moves > 0 && val < beta) {
+                int cur_move = __builtin_ctzll(moves);
+                try_move(cur_move);
             }
         }
     }
@@ -89,17 +89,8 @@ long long MTDF_Engine::search(Board& board, long long alpha, long long beta, int
             board.undo_move(move);
         }
         else {
-            if (best_move != -1) {
-                moves -= 1ull << best_move;
-                Move move = board.do_move(best_move);
-                val = std::min(val, search(board, alpha, b, depth - 1, turn, -player));
-                b = std::min(b, val);
-                board.undo_move(move);
-                if (val <= alpha)
-                    goto fail;
-            }
-            for (; moves > 0 && val > alpha; moves -= moves & (-moves)) {
-                int cur_move = __builtin_ctzll(moves);
+            auto try_move = [&](int cur_move) {
+                moves -= 1ull << cur_move;
                 Move move = board.do_move(cur_move);
                 long long new_val = search(board, alpha, b, depth - 1, turn, -player);
                 if (new_val < val) {
@@ -108,6 +99,15 @@ long long MTDF_Engine::search(Board& board, long long alpha, long long beta, int
                 }
                 b = std::min(b, val);
                 board.undo_move(move);
+            };
+            if (best_move != -1) {
+                try_move(best_move);
+                if (val <= alpha)
+                    goto fail;
+            }
+            while (moves > 0 && val > alpha) {
+                int cur_move = __builtin_ctzll(moves);
+                try_move(cur_move);
             }
         }
     }

@@ -20,11 +20,10 @@
 
 class MTDF_Engine : public AB_Engine {
 public:
-    std::map<Board, int> best[64];
     long long evaluation(Board& board, int depth);
     long long search(Board& board, long long alpha, long long beta, int depth, int turn, int player);
 
 private:
-    std::mutex map_mutex;
     long long g = 0;
+    std::map<Board, int> best[64];
 };
